@@ -1,0 +1,28 @@
+namespace:
+  name: sandbox
+
+replicas: 1
+
+image:
+  repository: tts2k/techtrends
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 64
+  limits:
+    cpu: 500m
+    memory: 128Mi
+
+service:
+  port: 8111
+  targetPort: 3111
+  protocol: TCP
+  type: ClusterIP
+
+containerPort: 3111
+
+livenessProbePath: /healthz
+readinessProbePath: /healthz
