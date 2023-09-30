@@ -32,11 +32,12 @@ def check_health() -> bool:
     cur = get_db_connection()
 
     rs = cur.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='Posts';"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='posts';"
     ).fetchone()
     cur.close()
 
-    return rs.count != 0
+
+    return len(rs) != 0
 
 
 # Define the Flask application
@@ -111,7 +112,7 @@ def health():
 @app.route("/metrics")
 def metrics():
     connection = get_db_connection()
-    count = connection.execute("SELECT Count(*) FROM Posts").fetchone()[0]
+    count = connection.execute("SELECT Count(*) FROM posts").fetchone()[0]
 
     return jsonify({"db_connection_count": 1, "postCount": count})
 
