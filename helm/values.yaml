@@ -22,7 +22,12 @@ service:
   protocol: TCP
   type: ClusterIP
 
-containerPort: 3111
+containerPort: &containerPort 3111
 
-livenessProbePath: /healthz
-readinessProbePath: /healthz
+livenessProbe:
+  path: /healthz
+  port: *containerPort
+
+readinessProbe:
+  path: /healthz
+  port: *containerPort

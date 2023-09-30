@@ -11,11 +11,18 @@ from flask import (
     flash,
 )
 
+db_connection_count = 0
+
+# increment database connection count
+def increment_db_con_count():
+    global db_connection_count
+    db_connection_count += 1
 
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
     connection = sqlite3.connect("database.db")
+    increment_db_con_count()
     connection.row_factory = sqlite3.Row
     return connection
 
@@ -35,7 +42,6 @@ def check_health() -> bool:
         "SELECT name FROM sqlite_master WHERE type='table' AND name='posts';"
     ).fetchone()
     cur.close()
-
 
     return len(rs) != 0
 
@@ -61,7 +67,7 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-        app.logger.info("Article not found.")
+        app.logger.error("Article not found.")
         return render_template("404.html"), 404
     else:
         app.logger.info("Article " + post["title"] + " retrieved!")
@@ -114,7 +120,7 @@ def metrics():
     connection = get_db_connection()
     count = connection.execute("SELECT Count(*) FROM posts").fetchone()[0]
 
-    return jsonify({"db_connection_count": 1, "postCount": count})
+    return jsonify({"db_connection_count": db_connection_count, "postCount": count})
 
 
 # start the application on port 3111
